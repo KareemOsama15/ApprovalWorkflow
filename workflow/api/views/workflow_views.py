@@ -7,16 +7,16 @@ from rest_framework.generics import (
 from rest_framework.response import Response
 from rest_framework import status
 from workflow.api.serializers import (
-    CreateRequestTypeApprovalWorkflowSerializer,
+    CreateApprovalWorkflowSerializer,
     CreateActionSerializer,
 )
 from workflow.services.approval_workflow_service import ApprovalWorkflowService
 from workflow.services.transition_service import TransitionService
 
 
-class GetRequestWorkflowView(RetrieveAPIView):
+class GetWorkflowView(RetrieveAPIView):
     """
-    Get a request workflow.
+    Get a workflow.
     """
 
     def retrieve(self, request, *args, **kwargs):
@@ -46,19 +46,19 @@ class GetAllWorkflowsView(ListAPIView):
         )
 
 
-class CreateRequestTypeApprovalWorkflowView(CreateAPIView):
+class CreateApprovalWorkflowView(CreateAPIView):
     """
-    Create a request type approval workflow.
+    Create an approval workflow.
     """
 
-    serializer_class = CreateRequestTypeApprovalWorkflowSerializer
+    serializer_class = CreateApprovalWorkflowSerializer
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(
-            {"data": "Request type approval workflow created successfully"},
+            {"data": "Approval workflow created successfully"},
             status=status.HTTP_201_CREATED,
         )
 

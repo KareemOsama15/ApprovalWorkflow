@@ -1,7 +1,7 @@
 from .workflow_views import (
-    GetRequestWorkflowView,
+    GetWorkflowView,
     GetAllWorkflowsView,
-    CreateRequestTypeApprovalWorkflowView,
+    CreateApprovalWorkflowView,
     CreateActionView,
     CreateWorkflowTransitionView,
     UpdateWorkflowTransitionView,
@@ -9,9 +9,9 @@ from .workflow_views import (
 
 
 __all__ = [
-    "GetRequestWorkflowView",
+    "GetWorkflowView",
     "GetAllWorkflowsView",
-    "CreateRequestTypeApprovalWorkflowView",
+    "CreateApprovalWorkflowView",
     "CreateActionView",
     "CreateWorkflowTransitionView",
     "UpdateWorkflowTransitionView",

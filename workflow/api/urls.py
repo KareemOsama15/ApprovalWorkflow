@@ -1,27 +1,27 @@
 from django.urls import path
 from workflow.api.views import (
-    GetRequestWorkflowView,
+    GetWorkflowView,
     GetAllWorkflowsView,
-    CreateRequestTypeApprovalWorkflowView,
     CreateActionView,
     CreateWorkflowTransitionView,
     UpdateWorkflowTransitionView,
+    CreateApprovalWorkflowView,
 )
 
 urlpatterns = [
     path(
-        "get-request-workflow",
-        GetRequestWorkflowView.as_view(),
-        name="get-request-workflow",
+        "get",
+        GetWorkflowView.as_view(),
+        name="get-workflow",
     ),
     path(
-        "get-all-workflows",
+        "list-all",
         GetAllWorkflowsView.as_view(),
         name="get-all-workflows",
     ),
     path(
-        "approval-workflow/create",
-        CreateRequestTypeApprovalWorkflowView.as_view(),
+        "approval-create",
+        CreateApprovalWorkflowView.as_view(),
         name="create-approval-workflow",
     ),
     path(
@@ -30,12 +30,12 @@ urlpatterns = [
         name="create-workflow-action",
     ),
     path(
-        "workflow-transition/create",
+        "transition/create",
         CreateWorkflowTransitionView.as_view(),
         name="create-workflow-transition",
     ),
     path(
-        "workflow-transition/update/<int:transition_id>",
+        "transition/update/<int:transition_id>",
         UpdateWorkflowTransitionView.as_view(),
         name="update-workflow-transition",
     ),

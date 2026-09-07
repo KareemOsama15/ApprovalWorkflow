@@ -1,10 +1,10 @@
 from .workflow_serializers import (
-    CreateRequestTypeApprovalWorkflowSerializer,
+    CreateApprovalWorkflowSerializer,
     CreateActionSerializer,
 )
 
 
 __all__ = [
-    "CreateRequestTypeApprovalWorkflowSerializer",
+    "CreateApprovalWorkflowSerializer",
     "CreateActionSerializer",
 ]

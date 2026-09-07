@@ -3,9 +3,9 @@ from workflow.models import ApprovelWorkflow, Action
 from requests.models import RequestType
 
 
-class CreateRequestTypeApprovalWorkflowSerializer(serializers.ModelSerializer):
+class CreateApprovalWorkflowSerializer(serializers.ModelSerializer):
     """
-    Create a request type approval workflow.
+    Create an approval workflow.
     """
 
     request_type = serializers.CharField()
