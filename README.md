@@ -43,31 +43,42 @@ Users (`requests.User`) have a role such as beneficiary, distributor, admin, bra
 
 ```
 core/                     # Django project (settings, URLs, WSGI/ASGI)
-requests/                 # Main app
-  models/                 # Domain models
+requests/                 # Requests domain (models, API, commands)
+workflow/                 # Approval workflows, actions, transitions
+  models/
   api/                    # DRF views, serializers, URLs
-  services/               # Workflow engine and request commands
+  services/               # Workflow, action, and transition services
 scripts/                  # Seed data (types, statuses, actions, workflows, products)
+postman/                  # Postman collection for API testing
 manage.py
 ```
 
 ### Models
+
+**requests app**
 
 | Model | Purpose |
 |-------|---------|
 | `Request` / `RequestType` / `RequestStatus` | Request instance, kind, and current status |
 | `RequestProduct` | Products and quantities on a request |
 | `RequestSequence` | Sequential request numbering |
-| `ApprovelWorkflow` | Workflow bound to a request type and initial status |
-| `Action` / `Transition` | Allowed status moves |
 | `Customer` / `CustomerCategory` / `ApprovedProduct` | Customers and approved product quantities |
 | `Product` | Catalog items |
 | `CommitteeForm` / `TechnicalForm` | Review forms assigned to users |
 | `User` | Custom `AbstractUser` with `role` |
 
+**workflow app**
+
+| Model | Purpose |
+|-------|---------|
+| `ApprovelWorkflow` | Workflow bound to a request type and initial status |
+| `Action` / `Transition` | Allowed status moves |
+
 Business logic lives in services:
 
-- `requests.services.workflow_services.WorkflowServices` — resolve workflows, apply transitions, inspect graphs
+- `workflow.services.approval_workflow_service.ApprovalWorkflowService` — resolve workflows and inspect graphs
+- `workflow.services.transition_service.TransitionService` — create, update, and look up transitions
+- `workflow.services.action_service.ActionService` — resolve actions
 - `requests.services.requests_commands.RequestCommands` — create requests, generate numbers, GFSA bulk status update
 
 ## Setup
@@ -87,7 +98,10 @@ python manage.py runserver
 
 Admin: [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/)
 
-API base: `http://127.0.0.1:8000/api/v1/requests/`
+API bases:
+
+- Requests: `http://127.0.0.1:8000/api/v1/requests/`
+- Workflow: `http://127.0.0.1:8000/api/v1/workflow/`
 
 There is no `requirements.txt` in the repo yet. Pin versions if you add one.
 
@@ -114,21 +128,40 @@ Available script keys: `request_types`, `request_statuses`, `products`, `custome
 
 Transitions are not seeded by `RunScripts`. Create them via the API or Django admin after workflows and actions exist.
 
+## Testing the API (Postman)
+
+Use the Postman collection in this repo to test the API:
+
+[`postman/ApprovalWorkflow.postman_collection.json`](postman/ApprovalWorkflow.postman_collection.json)
+
+1. Start the server (`python manage.py runserver`).
+2. Seed data if you have not already (see **Seed data** above).
+3. In Postman: **Import** → select `postman/ApprovalWorkflow.postman_collection.json`.
+4. Confirm the collection variable `base_url` is `http://127.0.0.1:8000/api`.
+5. Send requests from the **Requests** and **Workflow** folders.
+
+The collection covers create request, apply approval, GFSA status update, get/list workflows, and create/update actions and transitions.
+
 ## API
 
-All paths are under `/api/v1/requests/`.
+### Requests (`/api/v1/requests/`)
 
 | Method | Path | Description |
 |--------|------|-------------|
 | `POST` | `/create` | Create a request (auto number + initial status) |
 | `POST` | `/approval/create` | Apply an action and move the request to the next status |
 | `PATCH` / `PUT` | `/update-gfsa-to-review-status` | Move requests in GFSA review (status `14`) to a random outcome (`7`, `9`, or `15`) |
-| `GET` | `/get-request-workflow?request_type=<CODE>` | Transitions for one request type |
-| `GET` | `/get-all-workflows` | All workflows grouped by request type |
-| `POST` | `/approval-workflow/create` | Create a workflow for a request type |
+
+### Workflow (`/api/v1/workflow/`)
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/get?request_type=<CODE>` | Transitions for one request type |
+| `GET` | `/list-all` | All workflows grouped by request type |
+| `POST` | `/approval-create` | Create a workflow for a request type |
 | `POST` | `/action/create` | Create an action |
-| `POST` | `/workflow-transition/create` | Add a transition |
-| `PUT` / `PATCH` | `/workflow-transition/update/<transition_id>` | Update a transition |
+| `POST` | `/transition/create` | Add a transition |
+| `PUT` / `PATCH` | `/transition/update/<transition_id>` | Update a transition |
 
 ### Create request
 
@@ -164,7 +197,7 @@ Content-Type: application/json
 ### Create a transition
 
 ```http
-POST /api/v1/requests/workflow-transition/create
+POST /api/v1/workflow/transition/create
 Content-Type: application/json
 
 {

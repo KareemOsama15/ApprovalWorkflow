@@ -1,0 +1,265 @@
+{
+  "info": {
+    "_postman_id": "4686ad41-3ec4-472d-bbbd-a9515333aaf3",
+    "name": "ApprovalWorkflow",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "44778232"
+  },
+  "item": [
+    {
+      "name": "Requests",
+      "item": [
+        {
+          "name": "create-request",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"type\": \"INCREASE_PRODUCT_REQUEST\",\r\n    \"products\": [\r\n        {\r\n            \"code\": 201,\r\n            \"asked_quantity\": 690\r\n        },\r\n        {\r\n            \"code\": 102,\r\n            \"asked_quantity\": 750\r\n        }\r\n    ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/requests/create",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "requests",
+                "create"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "create-approval",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"request\": 14,\r\n    \"action\": \"approve\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/requests/approval/create",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "requests",
+                "approval",
+                "create"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "update-gfsa-review-status",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/requests/update-gfsa-to-review-status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "requests",
+                "update-gfsa-to-review-status"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Workflow",
+      "item": [
+        {
+          "name": "get-request-workflow",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/workflow/get?request_type=INCREASE_PRODUCT_REQUEST",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "workflow",
+                "get"
+              ],
+              "query": [
+                {
+                  "key": "request_type",
+                  "value": "INCREASE_PRODUCT_REQUEST"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get-all-workflows",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/workflow/list-all",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "workflow",
+                "list-all"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "create-workflow",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"request_type\": \"TAB\",\r\n    \"initial_status\": 10\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/workflow/approval-create",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "workflow",
+                "approval-create"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "create-action",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"type\": \"test_action\",\r\n    \"name_en\": \"test\",\r\n    \"name_ar\": \"تست\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/workflow/action/create",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "workflow",
+                "action",
+                "create"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "create-transition",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"request_type\": \"JOIN_REQUEST\",\r\n    \"from_status\": 16,\r\n    \"to_status\": 10,\r\n    \"action\": \"reopen\",\r\n    \"is_final\": \"False\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/workflow/transition/create",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "workflow",
+                "transition",
+                "create"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "update-transition",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"request_type\": \"JOIN_REQUEST\",\r\n    \"from_status\": 16,\r\n    \"to_status\": 11,\r\n    \"action\": \"reopen\",\r\n    \"is_final\": \"False\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/workflow/transition/update/8",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "workflow",
+                "transition",
+                "update",
+                "8"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000/api"
+    }
+  ]
+}
