@@ -25,25 +25,10 @@ class ApprovelWorkflow(models.Model):
         return f"{self.request_type.name_en} - {self.initial_status.name_en}"
 
 
-class ActionType(models.TextChoices):
-    ASSIGN_COMMITTEE = "assign_committee", "Assign Committee"
-    ASSIGN_TECHNICAL = "assign_technical", "Assign Technical"
-    APPROVE = "approve", "Approve"
-    REJECT = "reject", "Reject"
-    REOPEN = "reopen", "Reopen"
-    REASSIGN_CUSTOMER = "reassign_customer", "Reassign Customer"
-    REASSIGN_COMMITTEE = "reassign_committee", "Reassign Committee"
-    REASSIGN_TECHNICAL = "reassign_technical", "Reassign Technical"
-    REASSIGN_BOTH_COMMITTEES = "reassign_both_committees", "Reassign Both Committees"
-    SAVE_TECHNICAL_FORM = "save_technical_form", "Save Technical Form"
-    SAVE_COMMITTEE_FORM = "save_committee_form", "Save Committee Form"
-    GFSA_ACTION = "gfsa_action", "GFSA Action"
-
-
 class Action(models.Model):
-    type = models.CharField(max_length=60, choices=ActionType.choices)
-    name_en = models.CharField(unique=True, max_length=50)
-    name_ar = models.CharField(unique=True, max_length=50)
+    type = models.CharField(max_length=60, unique=True)
+    name_en = models.CharField(max_length=50)
+    name_ar = models.CharField(max_length=50)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 

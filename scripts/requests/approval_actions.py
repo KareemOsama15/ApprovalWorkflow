@@ -1,65 +1,65 @@
-from workflow.models import Action, ActionType
+from workflow.models import Action
 
 
 class CreateApprovalActions:
     APPROVAL_ACTIONS = [
         {
-            "type": ActionType.APPROVE,
+            "type": "approve",
             "name_en": "Approve",
             "name_ar": "موافقة",
         },
         {
-            "type": ActionType.REJECT,
+            "type": "reject",
             "name_en": "Reject",
             "name_ar": "رفض",
         },
         {
-            "type": ActionType.REASSIGN_CUSTOMER,
+            "type": "reassign_customer",
             "name_en": "Reassign Customer",
             "name_ar": "إعادة تعيين العميل",
         },
         {
-            "type": ActionType.REASSIGN_COMMITTEE,
+            "type": "reassign_committee",
             "name_en": "Reassign Committee",
             "name_ar": "إعادة تعيين عضو لجنة الزيارة",
         },
         {
-            "type": ActionType.REASSIGN_TECHNICAL,
+            "type": "reassign_technical",
             "name_en": "Reassign Technical",
             "name_ar": "إعادة تعيين عضو اللجنة الفنية",
         },
         {
-            "type": ActionType.REASSIGN_BOTH_COMMITTEES,
+            "type": "reassign_both_committees",
             "name_en": "Reassign Both Committees",
             "name_ar": "إعادة تعيين عضو لجنة الزيارة واللجنة الفنية",
         },
         {
-            "type": ActionType.SAVE_TECHNICAL_FORM,
+            "type": "save_technical_form",
             "name_en": "Save Technical Form",
             "name_ar": "حفظ الاستمارة الفنية",
         },
         {
-            "type": ActionType.SAVE_COMMITTEE_FORM,
+            "type": "save_committee_form",
             "name_en": "Save Committee Form",
             "name_ar": "حفظ استمارة لجنة الزيارة",
         },
         {
-            "type": ActionType.REOPEN,
+            "type": "reopen",
             "name_en": "Reopen",
             "name_ar": "إعادة فتح الطلب",
         },
         {
-            "type": ActionType.ASSIGN_COMMITTEE,
+            "type": "assign_committee",
             "name_en": "Assign Committee",
             "name_ar": "تعيين عضو لجنة الزيارة",
         },
         {
-            "type": ActionType.ASSIGN_TECHNICAL,
+            "type": "assign_technical",
             "name_en": "Assign Technical",
             "name_ar": "تعيين عضو لجنة الفنية",
         },
         {
-            "type": ActionType.GFSA_ACTION,
+            "type": "gfsa_action",
             "name_en": "GFSA Action",
             "name_ar": "إجراء من قبل GFSA",
         },

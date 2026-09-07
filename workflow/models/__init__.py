@@ -1,8 +1,7 @@
-from .workflow import ApprovelWorkflow, Action, Transition, ActionType
+from .workflow import ApprovelWorkflow, Action, Transition
 
 __all__ = [
     "ApprovelWorkflow",
     "Action",
-    "ActionType",
     "Transition",
 ]
