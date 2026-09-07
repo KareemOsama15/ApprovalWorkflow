@@ -10,10 +10,14 @@ from workflow.api.serializers import (
     CreateRequestTypeApprovalWorkflowSerializer,
     CreateActionSerializer,
 )
-from workflow.services.workflow_services import WorkflowServices
+from workflow.services.approval_workflow_service import ApprovalWorkflowService
+from workflow.services.transition_service import TransitionService
 
 
 class GetRequestWorkflowView(RetrieveAPIView):
+    """
+    Get a request workflow.
+    """
 
     def retrieve(self, request, *args, **kwargs):
         request_type = request.query_params.get("request_type")
@@ -22,7 +26,7 @@ class GetRequestWorkflowView(RetrieveAPIView):
                 {"message": "Request type is required"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        workflow = WorkflowServices().get_workflow_for_request_type(request_type)
+        workflow = ApprovalWorkflowService().get_workflow_for_request_type(request_type)
         return Response(
             {"data": workflow},
             status=status.HTTP_200_OK,
@@ -30,9 +34,12 @@ class GetRequestWorkflowView(RetrieveAPIView):
 
 
 class GetAllWorkflowsView(ListAPIView):
+    """
+    Get all workflows.
+    """
 
     def list(self, request, *args, **kwargs):
-        workflows = WorkflowServices().get_all_workflows()
+        workflows = ApprovalWorkflowService().get_all_workflows()
         return Response(
             {"data": workflows},
             status=status.HTTP_200_OK,
@@ -40,6 +47,9 @@ class GetAllWorkflowsView(ListAPIView):
 
 
 class CreateRequestTypeApprovalWorkflowView(CreateAPIView):
+    """
+    Create a request type approval workflow.
+    """
 
     serializer_class = CreateRequestTypeApprovalWorkflowSerializer
 
@@ -54,6 +64,9 @@ class CreateRequestTypeApprovalWorkflowView(CreateAPIView):
 
 
 class CreateActionView(CreateAPIView):
+    """
+    Create an action.
+    """
 
     serializer_class = CreateActionSerializer
 
@@ -68,9 +81,12 @@ class CreateActionView(CreateAPIView):
 
 
 class CreateWorkflowTransitionView(CreateAPIView):
+    """
+    Create a workflow transition.
+    """
 
     def create(self, request, *args, **kwargs):
-        WorkflowServices().create_workflow_transition(request.data)
+        TransitionService().create_workflow_transition(request.data)
         return Response(
             {"data": "Workflow transition created successfully"},
             status=status.HTTP_201_CREATED,
@@ -78,11 +94,14 @@ class CreateWorkflowTransitionView(CreateAPIView):
 
 
 class UpdateWorkflowTransitionView(UpdateAPIView):
+    """
+    Update a workflow transition.
+    """
 
     def update(self, request, *args, **kwargs):
         try:
             transition_id = kwargs.get("transition_id")
-            WorkflowServices().update_workflow_transition(request.data, transition_id)
+            TransitionService().update_workflow_transition(request.data, transition_id)
             return Response(
                 {"data": "Workflow transition updated successfully"},
                 status=status.HTTP_200_OK,

@@ -2,10 +2,14 @@ from django.db.models import F, QuerySet
 from django.db import transaction
 from requests.models import Request
 from typing import Any, Dict, Optional, List
-from workflow.services.workflow_services import WorkflowServices
 from requests.models import RequestSequence, RequestProduct
 from workflow.models import Transition
 import random
+from workflow.services.action_service import ActionService
+from workflow.services.approval_workflow_service import ApprovalWorkflowService
+from workflow.services.transition_service import TransitionService
+from workflow.models import Action, ApprovelWorkflow
+from rest_framework.exceptions import ValidationError
 
 
 class RequestCommands:
@@ -13,23 +17,39 @@ class RequestCommands:
     SEQUENCE_FORMAT = "REQ-{:06d}"
 
     def __init__(self):
-        self.workflow_services = WorkflowServices()
+        self.transition_service = TransitionService()
+        self.approval_workflow_service = ApprovalWorkflowService()
 
     def create_request(self, data: Dict[str, Any]) -> Request:
         with transaction.atomic():
             products = data.pop("products", [])
             data["number"] = self._generate_request_number()
-            data["status"] = self.workflow_services.get_initial_status(data["type"])
+            data["status"] = self.approval_workflow_service.get_initial_status(data["type"])
             request = Request.objects.create(**data)
             self.create_products(request, products)
             return request
 
     def create_request_approval(self, data: Dict[str, Any]) -> Request:
-        workflow_services = WorkflowServices()
         request: Request = data["request"]
-        transition: Transition = workflow_services.handle_request_transition(data)
-        if transition:
-            self._update_request_status(request, transition)
+        action_type: str = data["action"]
+
+        action: Action = ActionService().get_action(action_type)
+        workflow: ApprovelWorkflow = ApprovalWorkflowService().get_workflow(
+            {"request_type": request.type}
+        )
+
+        transition: Transition = self.transition_service.get_transition(
+            filters={
+                "workflow": workflow,
+                "action": action,
+                "from_status": request.status,
+            }
+        )
+        if not transition:
+            raise ValidationError(
+                f"Transition not found for request {request.number} and action {action_type}"
+            )
+        self._update_request_status(request, transition)
 
         return request
 
@@ -64,16 +84,22 @@ class RequestCommands:
         for request in requests:
             action = "gfsa_action"
             status_id = random.choice([7, 9, 15])
-            transition: Optional[Transition] = (
-                self.workflow_services.handle_gfsa_request_status_update(
-                    request=request, action=action, status_id=status_id
-                )
+
+            transition: Optional[Transition] = self.transition_service.get_transition(
+                filters={
+                    "workflow__request_type": request.type,
+                    "action__type": action,
+                    "from_status": request.status,
+                    "to_status__code": status_id,
+                }
             )
-            if transition:
-                self._update_request_status(request, transition)
-                updated_requests[request.number] = status_id
-            else:
+            if not transition:
                 warnings.append(f"Request {request.number} not updated")
+                continue
+
+            self._update_request_status(request, transition)
+            updated_requests[request.number] = status_id
+
         return updated_requests, warnings
 
     def _update_request_status(self, request: Request, transition: Transition) -> None:
