@@ -25,11 +25,9 @@ class TransitionService:
         matches_transitions: QuerySet[Transition] = list(
             Transition.objects.filter(**filters)[:2]
         )
-        if not matches_transitions:
-            raise ValidationError(f"No transition found for filters: {filters}")
         if len(matches_transitions) > 1:
             raise ValidationError(f"Multiple transitions found for filters: {filters}")
-        return matches_transitions[0]
+        return matches_transitions[0] if matches_transitions else None
 
     def create_workflow_transition(self, data: Dict[str, Any]) -> Transition:
         """
@@ -56,6 +54,8 @@ class TransitionService:
         Update a workflow transition.
         """
         transition = self.get_transition({"id": transition_id})
+        if not transition:
+            raise ValidationError(f"Transition not found for id: {transition_id}")
         transition.action = self.action_service.get_action(data.get("action"))
         transition.from_status_id = data.get("from_status")
         transition.to_status_id = data.get("to_status")

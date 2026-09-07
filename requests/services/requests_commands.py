@@ -38,7 +38,7 @@ class RequestCommands:
             {"request_type": request.type}
         )
 
-        transition: Transition = self.transition_service.get_transition(
+        transition: Optional[Transition] = self.transition_service.get_transition(
             filters={
                 "workflow": workflow,
                 "action": action,
@@ -52,19 +52,6 @@ class RequestCommands:
         self._update_request_status(request, transition)
 
         return request
-
-    def _generate_request_number(self) -> str:
-        last_request: Optional[RequestSequence] = (
-            RequestSequence.objects.select_for_update().order_by("-sequence").first()
-        )
-        if last_request:
-            last_seq = last_request.sequence
-            last_request.sequence = F("sequence") + 1
-            last_request.save()
-            return self.SEQUENCE_FORMAT.format(last_seq + 1)
-        else:
-            RequestSequence.objects.create(sequence=1)
-            return self.SEQUENCE_FORMAT.format(1)
 
     def create_products(self, request: Request, products: List[Dict[str, Any]]) -> None:
         for product in products:
@@ -107,3 +94,16 @@ class RequestCommands:
             return
         request.status = transition.to_status
         request.save(update_fields=["status"])
+
+    def _generate_request_number(self) -> str:
+        last_request: Optional[RequestSequence] = (
+            RequestSequence.objects.select_for_update().order_by("-sequence").first()
+        )
+        if last_request:
+            last_seq = last_request.sequence
+            last_request.sequence = F("sequence") + 1
+            last_request.save()
+            return self.SEQUENCE_FORMAT.format(last_seq + 1)
+        else:
+            RequestSequence.objects.create(sequence=1)
+            return self.SEQUENCE_FORMAT.format(1)
