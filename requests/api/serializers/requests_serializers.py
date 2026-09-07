@@ -3,6 +3,7 @@ from requests.models import Request
 from requests.models.customer import Customer
 from requests.services.requests_commands import RequestCommands
 from requests.models.request import RequestType
+from requests.models.workflow import Transition
 
 
 class CreateRequestSerializer(serializers.ModelSerializer):
@@ -26,4 +27,19 @@ class CreateRequestSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         request_commands = RequestCommands()
-        return request_commands.create(validated_data)
+        return request_commands.create_request(validated_data)
+
+
+class CreateRequestApprovalSerializer(serializers.ModelSerializer):
+    request = serializers.PrimaryKeyRelatedField(
+        queryset=Request.objects.select_related("type", "status")
+    )
+    action = serializers.CharField()
+
+    class Meta:
+        model = Transition
+        fields = ["request", "action"]
+
+    def create(self, validated_data):
+        request_commands = RequestCommands()
+        return request_commands.create_request_approval(validated_data)

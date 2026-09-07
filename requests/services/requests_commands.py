@@ -3,8 +3,7 @@ from django.db import transaction
 from requests.models import Request
 from typing import Any, Dict, Optional, List
 from requests.services.workflow_services import WorkflowServices
-from requests.models.request import RequestSequence
-from requests.models.request import RequestProduct
+from requests.models import RequestSequence, Transition, RequestProduct
 import random
 
 
@@ -15,7 +14,7 @@ class RequestCommands:
     def __init__(self):
         self.workflow_services = WorkflowServices()
 
-    def create(self, data: Dict[str, Any]) -> Request:
+    def create_request(self, data: Dict[str, Any]) -> Request:
         with transaction.atomic():
             products = data.pop("products", [])
             data["number"] = self._generate_request_number()
@@ -23,6 +22,15 @@ class RequestCommands:
             request = Request.objects.create(**data)
             self.create_products(request, products)
             return request
+
+    def create_request_approval(self, data: Dict[str, Any]) -> Request:
+        workflow_services = WorkflowServices()
+        request: Request = data["request"]
+        transition: Transition = workflow_services.handle_request_transition(data)
+        if transition:
+            self._update_request_status(request, transition)
+
+        return request
 
     def _generate_request_number(self) -> str:
         last_request: Optional[RequestSequence] = (
@@ -51,11 +59,24 @@ class RequestCommands:
     def update_requests_under_gfsa_review(self) -> None:
         requests = self.get_requests(filters={"status__code": 14})
         updated_requests = {}
+        warnings = []
         for request in requests:
             action = "gfsa_action"
             status_id = random.choice([7, 9, 15])
-            self.workflow_services.handle_gfsa_request_status_update(
-                request=request, action=action, status_id=status_id
+            transition: Optional[Transition] = (
+                self.workflow_services.handle_gfsa_request_status_update(
+                    request=request, action=action, status_id=status_id
+                )
             )
-            updated_requests[request.number] = status_id
-        return updated_requests
+            if transition:
+                self._update_request_status(request, transition)
+                updated_requests[request.number] = status_id
+            else:
+                warnings.append(f"Request {request.number} not updated")
+        return updated_requests, warnings
+
+    def _update_request_status(self, request: Request, transition: Transition) -> None:
+        if request.status == transition.to_status:
+            return
+        request.status = transition.to_status
+        request.save(update_fields=["status"])

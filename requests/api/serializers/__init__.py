@@ -1,6 +1,5 @@
-from .requests_serializers import CreateRequestSerializer
+from .requests_serializers import CreateRequestSerializer, CreateRequestApprovalSerializer
 from .workflow_serializers import (
-    CreateRequestApprovalSerializer,
     CreateRequestTypeApprovalWorkflowSerializer,
     CreateActionSerializer,
 )

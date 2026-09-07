@@ -7,27 +7,10 @@ from rest_framework.generics import (
 from rest_framework.response import Response
 from rest_framework import status
 from requests.api.serializers import (
-    CreateRequestApprovalSerializer,
     CreateRequestTypeApprovalWorkflowSerializer,
     CreateActionSerializer,
 )
-from requests.models import Request
 from requests.services.workflow_services import WorkflowServices
-
-
-class CreateRequestApprovalView(CreateAPIView):
-    serializer_class = CreateRequestApprovalSerializer
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        request: Request = serializer.save()
-        return Response(
-            {
-                "message": f"Request {request.number} transition successfully to status: {request.status.name_en}"
-            },
-            status=status.HTTP_201_CREATED,
-        )
 
 
 class GetRequestWorkflowView(RetrieveAPIView):

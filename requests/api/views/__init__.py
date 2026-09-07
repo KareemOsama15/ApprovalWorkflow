@@ -1,6 +1,5 @@
-from .requests_views import CreateRequestView, UpdateRequestsForGFSAToReviewView
+from .requests_views import CreateRequestView, UpdateRequestsForGFSAToReviewView, CreateRequestApprovalView
 from .workflow_views import (
-    CreateRequestApprovalView,
     GetRequestWorkflowView,
     GetAllWorkflowsView,
     CreateRequestTypeApprovalWorkflowView,

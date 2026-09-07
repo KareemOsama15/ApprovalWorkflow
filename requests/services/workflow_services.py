@@ -19,7 +19,7 @@ class WorkflowServices:
             raise ValidationError(f"No initial status found for workflow: {workflow}")
         return workflow.initial_status
 
-    def handle_request_transition(self, data: Dict[str, Any]) -> Request:
+    def handle_request_transition(self, data: Dict[str, Any]) -> Transition:
         request: Request = data["request"]
         action: Action = self.get_action(data["action"])
         workflow: ApprovelWorkflow = self.get_workflow({"request_type": request.type})
@@ -30,12 +30,11 @@ class WorkflowServices:
                 "from_status": request.status,
             }
         )
-        self._update_request_status(request, transition)
-        return request
+        return transition
 
     def handle_gfsa_request_status_update(
         self, request: Request, action: str, status_id: int
-    ) -> Request:
+    ) -> Transition:
         transition: Transition = self.get_transition(
             filters={
                 "workflow__request_type": request.type,
@@ -44,8 +43,7 @@ class WorkflowServices:
                 "to_status__code": status_id,
             }
         )
-        self._update_request_status(request, transition)
-        return request
+        return transition
 
     def get_action(self, action: str) -> Action:
         action = Action.objects.filter(type=action).first()
@@ -138,9 +136,3 @@ class WorkflowServices:
             workflows.setdefault(request_type_name, []).append(transition)
         workflows["count"] = len(rows)
         return workflows
-
-    def _update_request_status(self, request: Request, transition: Transition) -> None:
-        if request.status == transition.to_status:
-            return
-        request.status = transition.to_status
-        request.save(update_fields=["status"])

@@ -1,22 +1,5 @@
 from rest_framework import serializers
-from requests.models import Request, ApprovelWorkflow, Action, Transition, RequestType
-from requests.services.workflow_services import WorkflowServices
-
-
-class CreateRequestApprovalSerializer(serializers.ModelSerializer):
-    request = serializers.PrimaryKeyRelatedField(
-        queryset=Request.objects.select_related("type", "status")
-    )
-    action = serializers.CharField()
-
-    class Meta:
-        model = Transition
-        fields = ["request", "action"]
-
-    def create(self, validated_data):
-        workflow_services = WorkflowServices()
-        request: Request = workflow_services.handle_request_transition(validated_data)
-        return request
+from requests.models import ApprovelWorkflow, Action, RequestType
 
 
 class CreateRequestTypeApprovalWorkflowSerializer(serializers.ModelSerializer):
