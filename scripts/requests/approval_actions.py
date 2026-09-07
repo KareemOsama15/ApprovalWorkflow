@@ -1,4 +1,4 @@
-from requests.models import Action, ActionType
+from workflow.models import Action, ActionType
 
 
 class CreateApprovalActions:

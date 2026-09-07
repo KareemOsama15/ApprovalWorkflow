@@ -1,21 +1,11 @@
-from .requests_views import CreateRequestView, UpdateRequestsForGFSAToReviewView, CreateRequestApprovalView
-from .workflow_views import (
-    GetRequestWorkflowView,
-    GetAllWorkflowsView,
-    CreateRequestTypeApprovalWorkflowView,
-    CreateActionView,
-    CreateWorkflowTransitionView,
-    UpdateWorkflowTransitionView,
+from .requests_views import (
+    CreateRequestView,
+    UpdateRequestsForGFSAToReviewView,
+    CreateRequestApprovalView,
 )
 
 __all__ = [
     "CreateRequestView",
     "CreateRequestApprovalView",
     "UpdateRequestsForGFSAToReviewView",
-    "GetRequestWorkflowView",
-    "GetAllWorkflowsView",
-    "CreateRequestTypeApprovalWorkflowView",
-    "CreateActionView",
-    "CreateWorkflowTransitionView",
-    "UpdateWorkflowTransitionView",
 ]

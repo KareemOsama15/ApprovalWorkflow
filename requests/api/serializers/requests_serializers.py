@@ -3,7 +3,7 @@ from requests.models import Request
 from requests.models.customer import Customer
 from requests.services.requests_commands import RequestCommands
 from requests.models.request import RequestType
-from requests.models.workflow import Transition
+from workflow.models import Transition
 
 
 class CreateRequestSerializer(serializers.ModelSerializer):

@@ -1,4 +1,5 @@
-from requests.models import ApprovelWorkflow, RequestType, RequestStatus
+from requests.models import RequestType, RequestStatus
+from workflow.models import ApprovelWorkflow
 
 
 class CreateRequestsTypesBasedWorkflows:

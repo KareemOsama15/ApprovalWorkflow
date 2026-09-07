@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'requests.apps.RequestsConfig',
+    'workflow.apps.WorkflowConfig',
 ]
 
 MIDDLEWARE = [

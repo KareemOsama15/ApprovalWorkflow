@@ -2,8 +2,9 @@ from django.db.models import F, QuerySet
 from django.db import transaction
 from requests.models import Request
 from typing import Any, Dict, Optional, List
-from requests.services.workflow_services import WorkflowServices
-from requests.models import RequestSequence, Transition, RequestProduct
+from workflow.services.workflow_services import WorkflowServices
+from requests.models import RequestSequence, RequestProduct
+from workflow.models import Transition
 import random
 
 
